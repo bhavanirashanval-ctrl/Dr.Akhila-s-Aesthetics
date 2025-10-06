@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Akhila - Appointment Page</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="icon" type="image/png" href="images/fav-icon.png">
+    <style>
+
+        /* === Doctor Cards Container & Layout === */
+.doctor-cards-container {
+    display: flex;
+    flex-wrap: nowrap;       /* keep cards in single row */
+    gap: 15px;
+    justify-content: center; /* center horizontally */
+    width: 100%;             /* full width of viewport */
+    overflow-x: auto;        /* allow horizontal scroll if needed */
+    box-sizing: border-box;  /* include padding in width */
+    padding: 0 10px;         /* optional side padding */
+}
+
+/* === Individual Doctor Card === */
+.doctor-card {
+  background-color: #ffffff;
+  padding: 15px;
+  padding-top: 0;
+  border-radius: 8px;
+  text-align: center;
+  width: 220px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+/* === Profile Image Section === */
+.profile-image-container {
+  position: relative;
+  margin-bottom: 15px;
+  display: inline-block;
+}
+
+.profile-image-border {
+  width: 120px;
+  height: 120px;
+  border: 4px solid #d4af37;
+  border-radius: 50%;
+  margin: 0 auto;
+  overflow: hidden;
+  transform: translateY(15px);
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  transform: scale(1.05);
+}
+
+/* === Rating Badge === */
+.rating-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  background-color: #d4af37;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  font-weight: bold;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transform: translate(6px, 6px);
+}
+
+.star-icon {
+  font-size: 15px;
+}
+
+/* === Text Styles === */
+.doctor-name {
+  color: #d4af37;
+  font-size: 17px;
+  font-weight: bold;
+  margin-top: 25px;
+  margin-bottom: 3px;
+}
+
+.doctor-degree {
+  color: #d4af37;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 3px 0;
+}
+
+.doctor-title {
+  color: #444;
+  font-size: 14px;
+  margin: 0 0 15px 0;
+  line-height: 1.2;
+}
+
+.founder-director {
+  font-weight: 500;
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 15px;
+  margin-top: 3px;
+}
+
+/* === Stats Section === */
+.doctor-stats {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 8px 0;
+  border-top: 1px solid #eee;
+  font-size: 13px;
+}
+
+.stat-item {
+  color: #444;
+  display: flex;
+  align-items: center;
+}
+
+.stat-icon {
+  margin-right: 4px;
+  font-size: 15px;
+  color: #d4af37;
+}
+
+        /* Base Styling */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4; 
+        }
+        .page-container {
+            max-width: 1600px; 
+            margin: 0 auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1); 
+        }
+
+        /* Header Styling */
+        .main-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 40px;
+            background-color: #000000;
+            color: #ffffff; 
+        }
+        .logo { height: 60px; width: auto; }
+        .social-nav { display: flex; gap: 20px; }
+        .social-icon { height: 35px; width: 35px; transition: opacity 0.2s, transform 0.2s; }
+        .social-icon:hover { opacity: 0.7; transform: translateY(-2px); }
+        
+        /* Hero Banner Styling - CRITICAL FOR RESPONSIVENESS */
+        .hero-banner-container {
+            width: 100%;
+            /* DEFAULT: Desktop/Laptop background image (placeholder used for missing image) */
+            background-image: url('images/hero-banner.png'), url('https://via.placeholder.com/1600x400?text=Desktop+Hero+Banner'); 
+            background-size: cover;
+            background-position: center center;
+            height: 400px; 
+        }
+        .hero-banner-container .hero-banner { display: none; } 
+
+        /* Content & Form Layout */
+        .content-section {
+            display: flex; 
+            justify-content: center; 
+            gap: 60px; 
+            padding: 80px 40px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        .appointment-form-container {
+            background-color: #000; 
+            color: #fff;
+            padding: 40px;
+            border-radius: 20px; 
+            width: 380px; 
+            flex-shrink: 0; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center; 
+        }
+        .appointment-form-container h2 {font-size: 16px; font-weight: normal; margin-bottom: 5px;}
+        .appointment-form-container .appointment-title {font-size: 30px; font-weight: bold; margin-bottom: 40px; letter-spacing: 1px;}
+        .form-group { display: flex; align-items: center; margin-bottom: 20px; width: 100%; }
+        .form-group label {
+            width: 120px; 
+            text-align: left; 
+            font-size: 14px; 
+            white-space: nowrap; 
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .form-group input:not([type="radio"]):not([type="checkbox"]), 
+        .form-group select {
+            flex-grow: 1; background-color: #222; border: 1px solid #777; 
+            color: #fff; padding: 8px 10px; font-size: 14px; outline: none;
+            border-radius: 0; box-sizing: border-box;
+        }
+        .phone-input-wrapper { display: flex; flex-grow: 1; }
+        .phone-prefix { border: 1px solid #777; border-right: none; padding: 8px 10px; font-size: 14px; color: #ccc; user-select: none; background-color: #222; align-self: stretch; display: flex; align-items: center; }
+        .form-group input#contactNumber { border: 1px solid #777; margin-left: 0; padding: 8px 10px; background-color: #222; flex-grow: 1; }
+        .gender-radio-group { display: flex; align-items: center; flex-grow: 1; justify-content: space-between; max-width: 250px; }
+        .radio-option { display: flex; align-items: center; }
+        .gender-radio-group label { width: auto; margin-right: 0; margin-left: 5px; font-size: 14px; cursor: pointer; flex-shrink: 1; }
+
+        /* T&C Checkbox and Button */
+        .terms-checkbox {
+            display: flex; 
+            align-items: flex-start;
+            margin-top: 30px; 
+            margin-bottom: 40px; 
+            padding-left: 135px; /* Alignment for desktop */
+        }
+        .terms-checkbox input[type="checkbox"] { margin-right: 10px; transform: scale(1.2); margin-top: 5px; flex-shrink: 0; }
+        .terms-checkbox label { width: auto; font-size: 13px; line-height: 1.4; text-align: left; margin-right: 0; width: auto; }
+        .terms-checkbox label a {color: #ffc107; text-decoration: underline; cursor: pointer;}
+
+        .submit-btn {
+            background-color: #ffc107; color: #000; border: none; padding: 12px 30px;
+            border-radius: 0; font-weight: bold; cursor: pointer; width: 100%;
+        }
+
+        /* Services Section */
+        .services-section { width: 50%; max-width: 600px; color: #333; }
+        .services-section h2 {font-size: 24px; font-weight: bold; margin-bottom: 30px;}
+        .service-item h3 {font-size: 18px; font-weight: bold; margin-bottom: 5px;}
+        
+        /* Gallery Section */
+        .dermatology-results-section {background-color: #f4f4f4; padding-bottom: 50px; padding-top: 50px;}
+        .dermatology-results-section .section-title-wrapper {background-color: #000; padding: 20px 0; margin-bottom: 40px; text-align: center; color: #fff;}
+        .dermatology-results-section .section-title-wrapper h2 {margin: 0;}
+        .image-gallery-scroll-container { 
+            -ms-overflow-style: none; scrollbar-width: none; 
+            display: flex; overflow-x: scroll; gap: 20px; padding: 20px 40px; 
+            width: 100%; box-sizing: border-box; 
+        }
+        .image-gallery-scroll-container::-webkit-scrollbar { display: none; }
+        .gallery-track { display: flex; gap: 20px; width: auto; animation: none; }
+        .gallery-item { flex-shrink: 0; width: 300px; height: 350px; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); background-color: #fff; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+        @media (min-width: 901px) {
+            .gallery-track { width: 200%; animation: scroll-left 35s linear infinite; }
+        }
+        @keyframes scroll-left { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Footer Styles (Matching Image) */
+        .main-footer { background-color: #000000; color: #ffffff; padding: 40px; }
+        .footer-logo-container { display: flex; align-items: center; margin-bottom: 20px; }
+        .footer-logo-container .logo-name { color: #fff; font-size: 24px; margin-left: 15px; font-weight: bold; }
+        .footer-separator { border-top: 1px solid #333; margin-top: 20px; margin-bottom: 30px; width: 100%; }
+        .footer-policy-text { font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+        .footer-links-row { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; }
+        .footer-copyright { color: #ffc107; font-size: 14px; }
+        .footer-terms a { color: #ffffff; text-decoration: none; font-size: 14px; cursor: pointer;}
+
+
+        /* --- T&C Modal Styles --- */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.8); 
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; 
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%; 
+            max-width: 800px;
+            border-radius: 10px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-content h1 {
+            color: #000;
+            border-bottom: 2px solid #ffc107;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .modal-content h2 {
+            color: #555;
+            margin-top: 30px;
+            font-size: 20px;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: sticky;
+            top: -30px; 
+            background-color: #fefefe;
+            padding: 5px 10px;
+        }
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* ---------------------------------------------------- */
+        /* --- FULL RESPONSIVENESS BREAKPOINTS --- */
+        /* ---------------------------------------------------- */
+        
+        /* Tablet & Large Mobile (Screen size up to 900px) */
+        @media (max-width: 900px) {
+            /* GENERAL PADDING ADJUSTMENT */
+            .main-header, .image-gallery-scroll-container { padding: 15px 20px; }
+            .content-section { flex-direction: column; align-items: center; gap: 40px; padding: 40px 20px; }
+            .main-footer { padding: 30px 20px; } 
+
+            /* FORM LAYOUT STACKING */
+            .appointment-form-container { width: 100%; max-width: 450px; padding: 30px 20px; }
+            .form-group { flex-direction: column; align-items: flex-start; margin-bottom: 15px; }
+            .form-group label { width: 100%; text-align: left; margin-right: 0; margin-bottom: 5px; flex-shrink: 1; }
+            .form-group input:not([type="radio"]):not([type="checkbox"]), 
+            .form-group select, .phone-input-wrapper, .gender-radio-group { width: 100%; box-sizing: border-box; }
+            
+            /* T&C Checkbox Fix */
+            .terms-checkbox { 
+                padding-left: 0; 
+                justify-content: flex-start; 
+                margin-top: 20px; 
+                margin-bottom: 30px; 
+            }
+            .terms-checkbox input[type="checkbox"] {margin-top: 2px;} 
+
+            /* Footer Stacking */
+            .footer-links-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+            
+            /* Services Section Full Width */
+            .services-section { width: 100%; max-width: 450px; }
+        }
+        
+        /* Small Mobile (Screen size up to 500px) */
+        @media (max-width: 500px) {
+            
+            /* Header Stacking and Padding */
+            .main-header { flex-direction: column; gap: 15px; padding: 10px 15px; }
+            .logo { height: 45px; }
+            
+            /* CRITICAL FIX: Mobile Hero Image Switch */
+            .hero-banner-container {
+                /* Placeholder for mobile image */
+                background-image: url('images/hero-mobile.png'), url('https://via.placeholder.com/500x250?text=Mobile+Hero+Banner'); 
+                height: 250px; 
+                background-size: cover;
+                background-position: center top; 
+            }
+            
+            /* Content and Form Density */
+            .content-section { padding: 30px 15px; gap: 30px; }
+            .appointment-form-container { padding: 25px 15px; }
+            .appointment-form-container .appointment-title { font-size: 24px; margin-bottom: 30px; }
+            
+            /* Footer Text Size and Padding */
+            .main-footer { padding: 25px 15px; } 
+            .footer-logo-container .logo-name { font-size: 20px; margin-left: 10px; }
+            .footer-policy-text { font-size: 12px; }
+            
+            /* Gallery Density */
+            .gallery-item { width: 250px; height: 300px; }
+            
+            /* Modal Density */
+            .modal-content { margin: 20px auto; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+    <header class="main-header">
+        <div class="logo-container">
+            <img src="images/dr.akhila-logo.svg" onerror="this.onerror=null;this.src='https://via.placeholder.com/150x60?text=Logo';" alt="Dr. Akhila Logo" class="logo">
+        </div>
+        <nav class="social-nav">
+            <a href="https://www.facebook.com/drakhilasaesthetics/" target="_blank" aria-label="Facebook"><img src="images/facebook.svg" onerror="this.onerror=null;this.src='https://via.placeholder.com/35?text=FB';" alt="Facebook Icon" class="social-icon"></a>
+            <a href="https://www.youtube.com/@DrAkhilasAesthetics-xx5wo" target="_blank" aria-label="YouTube"><img src="images/youtube.svg" onerror="this.onerror=null;this.src='https://via.placeholder.com/35?text=YT';" alt="YouTube Icon" class="social-icon"></a>
+            <a href="https://www.instagram.com/dr_akhilas_aesthetics?igsh=MXE2dWxoN21jd29sZg==" target="_blank" aria-label="Instagram"><img src="images/instagram.svg" onerror="this.onerror=null;this.src='https://via.placeholder.com/35?text=IG';" alt="Instagram Icon" class="social-icon"></a>
+            <a href="https://wa.me/919160734545" target="_blank" aria-label="WhatsApp"><img src="images/whatsapp.svg" onerror="this.onerror=null;this.src='https://via.placeholder.com/35?text=WA';" alt="WhatsApp Icon" class="social-icon"></a>
+        </nav>
+    </header>
+
+    <div class="hero-banner-container">
+        <img src="images/hero-banner.png" onerror="this.onerror=null;this.src='https://via.placeholder.com/1200x400?text=Hero+Banner';" alt="Hero Banner for Dr. Akhila" class="hero-banner">
+    </div>
+
+    <div class="content-section">
+        <div class="appointment-form-container">
+            <h2>Reserve Your</h2>
+            <div class="appointment-title">APPOINTMENT</div>
+
+            <form id="appointment-form" onsubmit="return submitToPrivyr(event)">
+                <div class="form-group"><label for="name">Your Name</label><input type="text" id="name" name="Name" required></div>
+                
+                <div class="form-group">
+                    <label>Gender</label>
+                    <div class="gender-radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="genderMale" name="Gender" value="Male" required>
+                            <label for="genderMale">Male</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="genderFemale" name="Gender" value="Female" required>
+                            <label for="genderFemale">Female</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="genderOther" name="Gender" value="Other" required>
+                            <label for="genderOther">Other</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="serviceCategory">Service Category</label>
+                    <select id="serviceCategory" name="Service Category" required>
+                        <option value="">-- Select a Category --</option>
+                        <optgroup label="Skin & Dermatology"><option value="Skin & Dermatology">Skin & Dermatology</option></optgroup>
+                        <optgroup label="Hair Treatments"><option value="Hair Treatments">Hair Treatments</option></optgroup>
+                        <optgroup label="Laser"><option value="Laser Hair Reduction">Laser Hair Reduction</option></optgroup>
+                        <optgroup label="Body"><option value="Body Sculpting & Weight Management">Body Sculpting & Weight Management</option></optgroup>
+                        <optgroup label="Beauty"><option value="Beauty & Regular Grooming">Beauty & Regular Grooming</option></optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group"><label for="specificService">Specific Service</label><input type="text" id="specificService" name="Specific Service" placeholder="e.g., Acne Treatment, Liposuction, etc." required></div>
+                
+                <div class="form-group">
+                    <label for="location">Your City</label>
+                    <select id="location" name="Location" required>
+                        <option value="">-- Select Your City --</option>
+                        <optgroup label="Andhra Pradesh"><option value="Visakhapatnam">Visakhapatnam</option><option value="Vijayawada">Vijayawada</option><option value="Guntur">Guntur</option></optgroup>
+                        <optgroup label="Delhi NCR"><option value="New Delhi">New Delhi</option><option value="Gurgaon">Gurgaon</option><option value="Noida">Noida</option></optgroup>
+                        <optgroup label="Karnataka"><option value="Bangalore">Bangalore</option><option value="Mysore">Mysore</option></optgroup>
+                        <optgroup label="Maharashtra"><option value="Mumbai">Mumbai</option><option value="Pune">Pune</option><option value="Nagpur">Nagpur</option></optgroup>
+                        <optgroup label="Tamil Nadu"><option value="Chennai">Chennai</option><option value="Coimbatore">Coimbatore</option></optgroup>
+                        <optgroup label="Telangana"><option value="Hyderabad">Hyderabad</option></optgroup>
+                        <optgroup label="Other Regions"><option value="Other / Non-Listed City">Other / Non-Listed City</option></optgroup>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contactNumber">Contact Number</label>
+                    <div class="phone-input-wrapper">
+                        <span class="phone-prefix">+91</span>
+                        <input 
+                            type="tel" 
+                            id="contactNumber" 
+                            name="Phone" 
+                            pattern="[0-9]{10}" 
+                            title="Enter exactly 10 digits for your mobile number."
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" 
+                            maxlength="10"
+                            required
+                        >
+                    </div>
+                </div>
+                
+                <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="Email" required></div>
+                
+                <div class="terms-checkbox">
+                    <input type="checkbox" id="terms" name="terms_agreed" value="Yes" required>
+                    <label for="terms">I have read & agreed to the <a onclick="openModal(event)">T&C and the privacy policy</a></label>
+                </div>
+                
+                <button type="submit" class="submit-btn">BOOK MY APPOINTMENT</button>
+                
+                <p id="privyr-status"></p>
+            </form>
+
+            <p class="appointment-notes">
+                *Limited period offer. Terms & Condition apply.<br>
+                Result may vary from person to person.
+            </p>
+        </div>
+
+        <div class="services-section">
+            <h2>Services We Offer</h2>
+            <div class="service-item"><h3>Skin & Dermatology</h3><p>Tackle concerns like acne, pigmentation, dark spots, scars, signs of ageing, or uneven tone. Our treatments help you get radiant, younger-looking skin.</p></div>
+            <div class="service-item"><h3>Laser Hair Reduction</h3><p>Safe, effective, and comfortable permanent reduction of unwanted hair using the latest laser technologies.</p></div>
+            <div class="service-item"><h3>Body Sculpting & Weight Management</h3><p>Minimally-invasive to non-invasive techniques to reduce unwanted fat, contour the body, and help you achieve your ideal proportions — without surgery.</p></div>
+            <div class="service-item"><h3>Beauty & Regular Grooming</h3><p>Facials, cleans, massages, mani-pedis, and more — to maintain beauty, wellness, and self-care as part of your regular routine.</p></div>
+            <div class="service-item"><h3>Hair Treatments</h3><p>Solutions for hair loss, thinning, or damage: nourish, restore, and revitalize with expert therapies and targeted care.</p></div>
+        </div>
+    </div>
+
+    <!---containter of doctors------>
+    <!-- Doctor Cards Container Section -->
+<div class="doctor-cards-container">
+
+  <div class="doctor-card">
+    <div class="profile-image-container">
+      <div class="profile-image-border">
+        <img src="images/dr1.jpg" alt="Dr. K.Akhila Sai" class="profile-image">
+      </div>
+      <div class="rating-badge">
+        <span class="star-icon">★</span>5
+      </div>
+    </div>
+    <h3 class="doctor-name">Dr. K.Akhila Sai</h3>
+    <p class="doctor-title founder-director">Founder & Director</p>
+    <div class="doctor-stats">
+      <span class="stat-item"><span class="stat-icon">🧑‍⚕️</span>1000+</span>
+      <span class="stat-item"><span class="stat-icon">⏱️</span>5+ years</span>
+    </div>
+  </div>
+
+  <div class="doctor-card">
+    <div class="profile-image-container">
+      <div class="profile-image-border">
+        <img src="images/dr2.png" alt="Dr. Raja Shekar Madala" class="profile-image">
+      </div>
+      <div class="rating-badge">
+        <span class="star-icon">★</span>5
+      </div>
+    </div>
+    <h3 class="doctor-name">Dr. Raja Shekar Madala</h3>
+    <p class="doctor-degree">MS, M.Ch</p>
+    <p class="doctor-title">Consultant Plastic & Cosmetic Surgeon</p>
+    <div class="doctor-stats">
+      <span class="stat-item"><span class="stat-icon">🧑‍⚕️</span>1000+</span>
+      <span class="stat-item"><span class="stat-icon">⏱️</span>5+ years</span>
+    </div>
+  </div>
+
+  <div class="doctor-card">
+    <div class="profile-image-container">
+      <div class="profile-image-border">
+        <img src="images/dr3.jpg" alt="Dr. K.S.N. Ravi Teja" class="profile-image">
+      </div>
+      <div class="rating-badge">
+        <span class="star-icon">★</span>5
+      </div>
+    </div>
+    <h3 class="doctor-name">Dr. K.S.N. Ravi Teja</h3>
+    <p class="doctor-degree">MBBS, MD (DVL)</p>
+    <p class="doctor-title">Venerologist & Cosmetologist</p>
+    <div class="doctor-stats">
+      <span class="stat-item"><span class="stat-icon">🧑‍⚕️</span>1000+</span>
+      <span class="stat-item"><span class="stat-icon">⏱️</span>5+ years</span>
+    </div>
+  </div>
+
+  <div class="doctor-card">
+    <div class="profile-image-container">
+      <div class="profile-image-border">
+        <img src="images/dr4.png" alt="Dr. R.Aravind Reddy" class="profile-image">
+      </div>
+      <div class="rating-badge">
+        <span class="star-icon">★</span>5
+      </div>
+    </div>
+    <h3 class="doctor-name">Dr. R.Aravind Reddy</h3>
+    <p class="doctor-degree">MBBS, MD (DVL)</p>
+    <p class="doctor-title">Consultant Doctor</p>
+    <div class="doctor-stats">
+      <span class="stat-item"><span class="stat-icon">🧑‍⚕️</span>1000+</span>
+      <span class="stat-item"><span class="stat-icon">⏱️</span>3+ years</span>
+    </div>
+  </div>
+
+</div>
+<!-- End Doctor Cards Section -->
+
+    
+    <div class="dermatology-results-section">
+        <div class="section-title-wrapper">
+            <h2>The Art of Dermatology, The Proof in Results</h2>
+        </div>
+
+        <div class="image-gallery-scroll-container">
+            <div class="gallery-track">
+                <div class="gallery-item"><img src="images/1.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+1';" alt="Dermatology Result 1"></div>
+                <div class="gallery-item"><img src="images/2.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+2';" alt="Dermatology Result 2"></div>
+                <div class="gallery-item"><img src="images/3.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+3';" alt="Dermatology Result 3"></div>
+                <div class="gallery-item"><img src="images/4.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+4';" alt="Dermatology Result 4"></div>
+                <div class="gallery-item"><img src="images/5.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+5';" alt="Dermatology Result 5"></div>
+                <div class="gallery-item"><img src="images/6.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+6';" alt="Dermatology Result 6"></div>
+                <div class="gallery-item"><img src="images/7.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+7';" alt="Dermatology Result 7"></div>
+                
+                <div class="gallery-item"><img src="images/1.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+1';" alt="Dermatology Result 1"></div>
+                <div class="gallery-item"><img src="images/2.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+2';" alt="Dermatology Result 2"></div>
+                <div class="gallery-item"><img src="images/3.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+3';" alt="Dermatology Result 3"></div>
+                <div class="gallery-item"><img src="images/4.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+4';" alt="Dermatology Result 4"></div>
+                <div class="gallery-item"><img src="images/5.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+5';" alt="Dermatology Result 5"></div>
+                <div class="gallery-item"><img src="images/6.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+6';" alt="Dermatology Result 6"></div>
+                <div class="gallery-item"><img src="images/7.jpg" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x350?text=Result+7';" alt="Dermatology Result 7"></div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <footer class="main-footer">
+        <div class="footer-logo-container">
+            <img src="images/dr.akhila-logo.svg" onerror="this.onerror=null;this.src='https://via.placeholder.com/60x60?text=Logo';" alt="Dr. Akhila's Aesthetics Logo" class="logo">
+            <span class="logo-name">Dr. Akhila's Aesthetics</span>
+        </div>
+
+        <div class="footer-separator"></div>
+
+        <p class="footer-policy-text">
+            **Privacy Policy** Dr. Akhila's Aesthetics Skin Hair Laser Permanent Makeup Studio, recognizes its obligation to adhere to the best practice of integrity for its web, online visitors. We have developed our privacy practices in order to maintain the practices and also to comply with the Children’s Online Privacy Practices Act.
+        </p>
+
+        <div class="footer-links-row">
+            <span class="footer-copyright">@Dr. Akhila's Aesthetics 2025</span>
+            <span class="footer-terms"><a onclick="openModal(event)">Terms and conditions</a></span>
+        </div>
+    </footer>
+</div>
+
+<div id="termsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h1>Terms, Conditions & Disclaimers</h1>
+
+        <h2>1. General Information</h2>
+        <p>All advertisements, promotions, and communications from Dr. Akhila’s Aesthetics are intended to provide accurate and transparent information about our specialized skin, hair, and laser treatments. These services cover a wide range of advanced procedures designed to enhance skin health, improve hair care, and deliver safe, effective laser solutions.</p>
+        <p>We strictly adhere to applicable Indian laws, guidelines of the Central Consumer Protection Authority (CCPA), and other regulatory directives.</p>
+        
+        <h2>2. Nature of Treatment Claims – Laser Skin Treatments</h2>
+        <ul>
+            <li><strong>Treatment Safety & Use:</strong> All laser treatments (for hair removal, pigmentation, acne scars, or skin rejuvenation) are performed using certified technologies and as per manufacturer’s guidelines.</li>
+            <li><strong>No Guaranteed Results:</strong> Laser treatments are cosmetic in nature, not medical cures. Results may vary depending on skin type, concern severity, and lifestyle.</li>
+            <li><strong>Indian Skin Considerations:</strong> Since most studies are based on Western skin types, Indian/Asian skin may respond differently. Protocols are customized for Indian skin tones to ensure safety.</li>
+        </ul>
+
+        <h2>3. Laser Skin Treatment Disclaimer</h2>
+        <ul>
+            <li><strong>Safety & Approval:</strong> Laser devices are globally certified and widely used for concerns like hair removal, pigmentation, acne scars, and skin rejuvenation.</li>
+            <li><strong>Result Variation:</strong> Outcomes differ from person to person depending on skin type, concern severity, and lifestyle.</li>
+            <li><strong>Demographic Limitation:</strong> Many clinical studies are based on Western skin tones; results on Indian/Asian skin may vary.</li>
+            <li><strong>Treatment Scope:</strong> Laser treatments improve specific skin concerns but are not a substitute for overall skin or health care.</li>
+            <li><strong>Regulatory Status in India:</strong> All treatments are performed with approved and legally imported technologies, adapted for Indian skin safety.</li>
+        </ul>
+
+        <h2>4. Device Approvals & Procurement</h2>
+        <ul>
+            <li><strong>Laser Hair removal machine - Diolash Ultra:</strong> FDA approved 1200w diode laser hair removal machine with USA coherent laser bars. Clinical studies and manufacturer data confirm safe and effective hair reduction, showing up to a significant decrease in unwanted hair growth within 6–8 treatment sessions. Diolash Ultra Laser Hair Removal Machines are sourced exclusively from certified and compliant Indian suppliers, ensuring the highest standards of safety, quality, and proven efficacy.</li>
+            <li><strong>MNRF (Microneedling Radio Frequency):</strong> An advanced, minimally invasive skin treatment designed to effectively treat acne scars. It works by delivering controlled radio frequency energy through fine microneedles into the deeper layers of the skin, stimulating collagen production, tightening tissue, and promoting natural skin repair for smoother, healthier, and scar-free skin.</li>
+            <li><strong>Ultrasound Machine:</strong> Advanced beauty machine used in Medifacials for deep cleansing and skin rejuvenation.</li>
+            <li><strong>Pico Laser:</strong> Effective treatment for pigmentation, dark spots, and uneven skin tone.</li>
+            <li><strong>HIFU (High-Intensity Focused Ultrasound):</strong> Non-surgical anti-ageing solution for skin tightening and face lifting.</li>
+            <li><strong>Chemical Peels:</strong> Gentle exfoliation treatment for skin whitening, glow, and smooth texture.</li>
+            <li><strong>Follitech Machine:</strong> Innovative therapy for stimulating natural hair regrowth and reducing hair fall.</li>
+        </ul>
+
+        <h2>5. Advertising & Promotional Claims</h2>
+        <ul>
+            <li>All claims in our advertisements or promotions (e.g., ‘visible improvement after X sessions’) are indicative and based on manufacturer data or clinical studies. Individual results may vary.</li>
+            <li>Actual results may vary from person to person. Outcomes depend on individual skin type, hair texture, lifestyle factors, and underlying health conditions.</li>
+            <li><strong>Treatment Areas:</strong> Our skin, hair, and laser procedures are customized to address specific concerns such as facial skin, scalp, underarms, arms, legs, back, and other targeted areas.</li>
+            <li><strong>No Over-Promise:</strong> With consistent care, you can expect gradual but lasting improvements, such as smoother skin, brighter complexions, and healthier hair.</li>
+            <li><strong>Reference:</strong> By engaging with our content, clients acknowledge that full disclaimers are available on this page.</li>
+        </ul>
+
+        <h2>6. Liability & Responsibility</h2>
+        <ul>
+            <li><strong>No Guarantee of Outcomes:</strong> Dr. Akhila’s Aesthetics does not assume liability beyond the scientifically approved treatment scope.</li>
+            <li><strong>Medical Consultation First:</strong> Every client is encouraged to undergo a detailed consultation with our doctors before deciding on a procedure.</li>
+            <li><strong>Transparency:</strong> We do not use contracts or claims to mislead or bypass accountability.</li>
+        </ul>
+        
+        <h2>7. Consumer Guidance</h2>
+        <ul>
+            <li><strong>Verify Claims:</strong> Always discuss expectations with our experts before treatment.</li>
+            <li><strong>Avoid Unrealistic Expectations:</strong> No treatment promises drastic, full-body, or permanent transformations.</li>
+            <li><strong>Transparency Commitment:</strong> We encourage open communication and provide complete clarity on what results to realistically expect.</li>
+        </ul>
+
+        <h2>8. Updates & Compliance</h2>
+        <ul>
+            <li>This disclaimer page is regularly updated in line with Indian laws, FDA updates, and CCPA directives.</li>
+            <li>All promotional material carries asterisks/links directing clients here.</li>
+            <li>We reserve the right to revise claims for accuracy and compliance.</li>
+        </ul>
+
+        <div class="contact-info">
+            <h2>9. Contact Us</h2>
+            <p>For clarifications or detailed information:</p>
+            <strong>📍 Clinic Address:</strong>
+            <p>3rd Floor, Plot 190C, High-Tension Line Road, Above iPremium Apple Service Center, Raghavendra Colony, Kondapur, Hyderabad, Telangana – 500084</p>
+            <strong>Phone</strong>
+            <p>+91 9505985010<br>Emergency: +91 9063271426</p>
+            <strong>Email</strong>
+            <p>akhilaaesthetics@gmail.com<br>drakhilasai@gmail.com</p>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // --- Modal Functions ---
+        const modal = document.getElementById("termsModal");
+        
+        function openModal(event) {
+            // Prevent the default action (page reload/navigation)
+            event.preventDefault(); 
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Close the modal if the user clicks anywhere outside of the modal content
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+
+        // --- Form Submission (Privyr) ---
+        function submitToPrivyr(event) {
+            event.preventDefault();
+
+            // ⭐ WEBHOOK URL: Replace this with your actual Privyr webhook URL
+            const PRIVYR_WEBHOOK_URL = 'https://www.privyr.com/api/v1/incoming-leads/0vZfjMQw/yTerhuQd';
+            
+            const form = document.getElementById('appointment-form');
+            const statusElement = document.getElementById('privyr-status');
+            const formData = new FormData(form);
+            const data = {};
+
+            // 1. Collect Data and perform validation
+            const contactNumberInput = document.getElementById('contactNumber');
+            const rawContactNumber = contactNumberInput.value.trim();
+            
+            // Check for required selections/validation
+            const selectedGender = form.elements['Gender'].value;
+            const selectedServiceCategory = document.getElementById('serviceCategory').value;
+            const selectedLocation = document.getElementById('location').value;
+            
+            // Simple client-side validation using SweetAlert2
+            if (!selectedGender || !selectedServiceCategory || !selectedLocation) {
+                 Swal.fire({ title: 'Missing Information', html: 'Please ensure all fields (Gender, Service, City) are selected.', icon: 'warning', confirmButtonColor: '#ffc107' });
+                 return false;
+            }
+            if (rawContactNumber.length !== 10 || !/^\d{10}$/.test(rawContactNumber)) {
+                 Swal.fire({ title: 'Invalid Contact Number', html: 'Please enter a valid 10-digit mobile number.', icon: 'warning', confirmButtonColor: '#ffc107' });
+                 return false;
+            }
+
+            // Populate data object
+            formData.forEach((value, key) => {
+                 data[key] = value;
+            });
+            
+            // Crucial step: Prepend '+91' to the raw 10-digit number for international format
+            data['Phone'] = '+91' + rawContactNumber;
+
+            // Add custom 'Source' field 
+            data['Source'] = 'Dr. Akhila Appointment Form (Single Page)';
+            data['Email'] = data['Email'] || 'N/A'; 
+            
+            // Combine specific fields into a 'Notes' field for the Privyr dashboard
+            data['Notes'] = `
+                Gender: ${data['Gender'] || 'N/A'}
+                Service Category: ${data['Service Category'] || 'N/A'}
+                Specific Service: ${data['Specific Service'] || 'N/A'}
+                Location/City: ${data['Location'] || 'N/A'}
+                T&C Agreed: ${document.getElementById('terms').checked ? 'Yes' : 'No'}
+                Submitted from: Single Page Landing Form
+            `.trim();
+            
+            // Clean up verbose fields 
+            delete data['Gender'];
+            delete data['Service Category'];
+            delete data['Specific Service'];
+            delete data['Location'];
+            delete data['terms_agreed'];
+
+            // 2. Submit the Request
+            statusElement.textContent = 'Booking appointment...';
+
+            fetch(PRIVYR_WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 3. Handle Success: Show SweetAlert
+                    Swal.fire({
+                        title: 'Appointment Booked! 🎉',
+                        html: 'Thank you! Your request has been successfully submitted. We will contact you shortly on <b>' + data['Phone'] + '</b> to confirm.',
+                        icon: 'success',
+                        confirmButtonColor: '#ffc107',
+                        confirmButtonText: 'Great!',
+                    });
+
+                    // Clear form and status message
+                    form.reset(); 
+                    statusElement.textContent = ''; 
+                } else {
+                    // Handle API error responses
+                    throw new Error(`Privyr API Error: ${response.status} - Could not submit lead.`);
+                }
+            })
+            .catch(error => {
+                // 4. Handle Failure: Show SweetAlert for error
+                Swal.fire({
+                    title: 'Booking Failed!',
+                    html: 'There was an issue submitting your request. Please check your connection or try again later.',
+                    icon: 'error',
+                    confirmButtonColor: '#ffc107'
+                });
+                statusElement.textContent = '❌ Submission failed. Please try again.';
+                console.error('Privyr submission error:', error);
+            });
+
+            return false;
+        }
+    </script>
+</body>
+</html>
